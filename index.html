@@ -1,43 +1,292 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SecureSets - Workout Tracker</title>
-    <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            max-width: 800px;
-            margin: 50px auto;
-            padding: 20px;
-            line-height: 1.6;
-            color: #333;
-        }
-        h1 {
-            color: #1a1a1a;
-        }
-        .links {
-            margin-top: 30px;
-        }
-        .links a {
-            display: inline-block;
-            margin-right: 20px;
-            color: #007AFF;
-            text-decoration: none;
-        }
-        .links a:hover {
-            text-decoration: underline;
-        }
-    </style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f7f5f0">
+  <meta name="description" content="Plan strength workouts, log sets and weights, and review your training history with SecureSets for Android.">
+  <title>SecureSets — Workout planner and logbook for Android</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #211d19;
+      --muted: #706860;
+      --paper: #f7f5f0;
+      --card: #fff;
+      --line: #e8e1d9;
+      --orange: #f47721;
+      --orange-dark: #c95410;
+      --soft-orange: #fff0e4;
+      --green: #2d7457;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--paper);
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: inherit; }
+    a:focus-visible { outline: 3px solid var(--orange); outline-offset: 4px; }
+    .wrap { width: min(1120px, calc(100% - 40px)); margin: 0 auto; }
+    .site-header {
+      display: flex;
+      min-height: 82px;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      border-bottom: 1px solid var(--line);
+    }
+    .brand { display: inline-flex; align-items: center; gap: 11px; text-decoration: none; font-weight: 760; letter-spacing: -.03em; }
+    .brand-mark { display: grid; width: 38px; height: 38px; place-items: center; border-radius: 13px; color: var(--orange-dark); background: var(--soft-orange); }
+    .brand-mark svg { width: 23px; height: 23px; }
+    .brand-name { font-size: 19px; }
+    .brand-note { display: block; margin-top: -3px; color: var(--muted); font-size: 11px; font-weight: 550; letter-spacing: .08em; text-transform: uppercase; }
+    .nav { display: flex; align-items: center; gap: 25px; font-size: 14px; }
+    .nav a:not(.button) { color: var(--muted); text-decoration: none; }
+    .nav a:not(.button):hover { color: var(--ink); }
+    .button {
+      display: inline-flex;
+      min-height: 48px;
+      align-items: center;
+      justify-content: center;
+      padding: 0 20px;
+      border: 0;
+      border-radius: 999px;
+      color: #fff;
+      background: var(--orange);
+      font-size: 15px;
+      font-weight: 730;
+      text-decoration: none;
+      transition: background .15s ease, transform .15s ease;
+    }
+    .button:hover { background: var(--orange-dark); transform: translateY(-1px); }
+    .hero {
+      display: grid;
+      grid-template-columns: 1fr .82fr;
+      align-items: center;
+      gap: clamp(40px, 8vw, 100px);
+      padding: 86px 0 68px;
+    }
+    .eyebrow { margin: 0 0 14px; color: var(--orange-dark); font-size: 12px; font-weight: 780; letter-spacing: .13em; text-transform: uppercase; }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { max-width: 660px; margin-bottom: 21px; font-size: clamp(42px, 6vw, 70px); line-height: .99; letter-spacing: -.065em; }
+    h1 span { color: var(--orange-dark); }
+    .hero-copy > p:not(.eyebrow) { max-width: 570px; margin-bottom: 25px; color: var(--muted); font-size: 18px; }
+    .cta-row { display: flex; flex-wrap: wrap; align-items: center; gap: 13px 18px; }
+    .cta-note { margin: 0; color: var(--muted); font-size: 13px; }
+    .quick-facts { display: flex; flex-wrap: wrap; gap: 10px 19px; margin: 25px 0 0; padding: 0; color: var(--muted); font-size: 13px; list-style: none; }
+    .quick-facts li::before { content: "✓"; margin-right: 7px; color: var(--green); font-weight: 800; }
+    .hero-shot { width: min(100%, 365px); justify-self: center; margin: 0; padding: 10px; border: 1px solid var(--line); border-radius: 31px; background: var(--card); box-shadow: 0 24px 65px #5b453017; transform: rotate(1.2deg); }
+    .hero-shot img { display: block; width: 100%; height: auto; border-radius: 23px; }
+    .hero-shot figcaption { padding: 11px 8px 5px; color: var(--muted); font-size: 12px; text-align: center; }
+    .section { padding: 78px 0; border-top: 1px solid var(--line); }
+    .section-heading { max-width: 700px; margin: 0 auto 36px; text-align: center; }
+    .section-heading h2, .split-copy h2, .privacy h2 { margin-bottom: 12px; font-size: clamp(30px, 4vw, 46px); line-height: 1.08; letter-spacing: -.045em; }
+    .section-heading > p:last-child, .split-copy > p:not(.eyebrow), .privacy > p:not(.eyebrow) { color: var(--muted); font-size: 16px; }
+    .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .step { min-height: 168px; padding: 25px; border: 1px solid var(--line); border-radius: 22px; background: var(--card); }
+    .step-number { display: grid; width: 34px; height: 34px; margin-bottom: 19px; place-items: center; border-radius: 12px; color: var(--orange-dark); background: var(--soft-orange); font-size: 13px; font-weight: 800; }
+    .step h3 { margin-bottom: 7px; font-size: 18px; letter-spacing: -.02em; }
+    .step p { margin: 0; color: var(--muted); font-size: 14px; }
+    .screens { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 28px; }
+    .screen { margin: 0; padding: 10px; border: 1px solid var(--line); border-radius: 23px; background: var(--card); }
+    .screen img { display: block; width: 100%; height: auto; border-radius: 15px; }
+    .screen figcaption { min-height: 51px; padding: 12px 7px 2px; color: var(--muted); font-size: 13px; }
+    .screen figcaption strong { display: block; margin-bottom: 2px; color: var(--ink); font-size: 14px; }
+    .split { display: grid; grid-template-columns: .9fr 1fr; align-items: center; gap: clamp(35px, 8vw, 88px); }
+    .pro { background: #f1ece5; }
+    .split-copy { max-width: 520px; }
+    .split-copy ul { display: grid; gap: 9px; margin: 22px 0 0; padding: 0; list-style: none; }
+    .split-copy li { color: var(--muted); }
+    .split-copy li::before { content: "✓"; margin-right: 10px; color: var(--green); font-weight: 800; }
+    .pro-shot { width: min(100%, 410px); justify-self: center; margin: 0; padding: 10px; border: 1px solid var(--line); border-radius: 24px; background: var(--card); box-shadow: 0 18px 45px #5b453012; }
+    .pro-shot img { display: block; width: 100%; height: auto; border-radius: 15px; }
+    .pro-shot figcaption { padding: 9px 5px 3px; color: var(--muted); font-size: 12px; text-align: center; }
+    .price-note { margin: 18px 0 0; color: var(--muted); font-size: 13px; }
+    .privacy { padding: 68px; border: 1px solid #f1d3bd; border-radius: 28px; background: #fffaf6; }
+    .privacy-grid { display: grid; grid-template-columns: 1fr .82fr; gap: 42px; align-items: start; }
+    .privacy-list { margin: 0; padding: 0; color: var(--muted); font-size: 14px; list-style: none; }
+    .privacy-list li { padding: 12px 0; border-bottom: 1px solid var(--line); }
+    .privacy-list li:last-child { border: 0; }
+    .privacy-list strong { display: block; margin-bottom: 3px; color: var(--ink); }
+    .fine-link { color: var(--orange-dark); font-weight: 650; }
+    .last-cta { padding: 78px 0 84px; text-align: center; }
+    .last-cta h2 { margin-bottom: 12px; font-size: clamp(32px, 4.5vw, 50px); letter-spacing: -.05em; }
+    .last-cta p { margin-bottom: 23px; color: var(--muted); }
+    footer { padding: 25px 0 32px; border-top: 1px solid var(--line); color: var(--muted); font-size: 12px; }
+    .footer-row { display: flex; align-items: center; justify-content: space-between; gap: 18px; }
+    .footer-links { display: flex; flex-wrap: wrap; gap: 18px; }
+    .footer-links a { text-decoration: none; }
+    .footer-links a:hover { color: var(--ink); }
+
+    @media (max-width: 760px) {
+      .wrap { width: min(100% - 30px, 560px); }
+      .site-header { min-height: 72px; }
+      .nav { gap: 12px; }
+      .nav a:not(.button) { display: none; }
+      .nav .button { min-height: 42px; padding: 0 14px; font-size: 13px; }
+      .hero { grid-template-columns: 1fr; gap: 34px; padding: 54px 0 48px; }
+      h1 { font-size: clamp(42px, 12vw, 62px); }
+      .hero-shot { width: min(76%, 330px); }
+      .section { padding: 58px 0; }
+      .steps { grid-template-columns: 1fr; gap: 11px; }
+      .step { min-height: 0; padding: 19px; }
+      .step-number { margin-bottom: 12px; }
+      .screens { grid-template-columns: 1fr 1fr; gap: 10px; }
+      .screen:last-child { grid-column: 1 / -1; width: min(75%, 300px); justify-self: center; }
+      .screen figcaption { min-height: 58px; font-size: 12px; }
+      .split, .privacy-grid { grid-template-columns: 1fr; gap: 28px; }
+      .pro-shot { width: min(84%, 350px); }
+      .privacy { padding: 28px 23px; border-radius: 23px; }
+      .last-cta { padding: 60px 0; }
+      .footer-row { align-items: flex-start; flex-direction: column; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after { transition-duration: .01ms !important; }
+    }
+  </style>
 </head>
 <body>
-    <h1>SecureSets</h1>
-    <p>A powerful workout tracking app for Android.</p>
-    
-    <div class="links">
-        <a href="https://play.google.com/store/apps/details?id=com.securesets.app">Download on Google Play</a>
-        <a href="https://thijszoontjes.github.io/SecureSets/">View on GitHub</a>
-        <a href="https://thijszoontjes.github.io/securesets-privacy/">Privacy Policy</a>
+  <header class="site-header wrap">
+    <a class="brand" href="#top" aria-label="SecureSets home">
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 32 32" fill="none"><path d="M4 12v8M8 9v14M11 14h10M21 9v14M25 12v8M28 14v4" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg>
+      </span>
+      <span><span class="brand-name">SecureSets</span><span class="brand-note">Strength training</span></span>
+    </a>
+    <nav class="nav" aria-label="Main navigation">
+      <a href="#how">How it works</a>
+      <a href="#pro">Pro</a>
+      <a href="#privacy">Privacy</a>
+      <a class="button" href="https://play.google.com/store/apps/details?id=com.securesets.app&amp;utm_source=securesets_site&amp;utm_medium=website&amp;utm_campaign=ss_first10_2026-10&amp;utm_content=nav_cta">Get the app</a>
+    </nav>
+  </header>
+
+  <main id="top">
+    <section class="hero wrap" aria-labelledby="hero-title">
+      <div class="hero-copy">
+        <p class="eyebrow">For lifters who already have a plan</p>
+        <h1 id="hero-title">See last time.<br><span>Log today.</span></h1>
+        <p>Repeat a workout with your previous reps and weights ready to check. Log each set, then review how training is moving over time.</p>
+        <div class="cta-row">
+          <a class="button" href="https://play.google.com/store/apps/details?id=com.securesets.app&amp;utm_source=securesets_site&amp;utm_medium=website&amp;utm_campaign=ss_first10_2026-10&amp;utm_content=hero_cta">Get SecureSets on Google Play</a>
+          <p class="cta-note">Free to install · Optional Pro</p>
+        </div>
+        <ul class="quick-facts" aria-label="SecureSets highlights">
+          <li>No account required</li>
+          <li>Workout data stays on your device</li>
+        </ul>
+      </div>
+      <figure class="hero-shot">
+        <img src="assets/01-home.png" alt="SecureSets home screen with a ready workout and saved routines" width="1080" height="1920">
+        <figcaption>Open the app and see what you planned to train.</figcaption>
+      </figure>
+    </section>
+
+    <section class="section" id="how" aria-labelledby="how-title">
+      <div class="wrap">
+        <div class="section-heading">
+          <p class="eyebrow">From plan to progress</p>
+          <h2 id="how-title">Plan. Log. Review.</h2>
+          <p>Keep the session focused on the lifts in front of you, then use your own history to see how training is moving.</p>
+        </div>
+        <div class="steps">
+          <article class="step">
+            <span class="step-number" aria-hidden="true">01</span>
+            <h3>Build your routine</h3>
+            <p>Create and edit workouts around your goals, equipment and schedule. Plan manually or try the optional on-device AI model.</p>
+          </article>
+          <article class="step">
+            <span class="step-number" aria-hidden="true">02</span>
+            <h3>Log each set</h3>
+            <p>Record reps and weight as you train, with a rest timer built into the workout.</p>
+          </article>
+          <article class="step">
+            <span class="step-number" aria-hidden="true">03</span>
+            <h3>Review your work</h3>
+            <p>Return to completed sessions and see how often you trained and how your lifts changed.</p>
+          </article>
+        </div>
+        <div class="screens" aria-label="SecureSets app screens">
+          <figure class="screen">
+            <img src="assets/02-routines.png" alt="SecureSets routines screen with saved training plans" width="1080" height="1920" loading="lazy">
+            <figcaption><strong>Reusable routines</strong>Make a plan once and edit it as needed.</figcaption>
+          </figure>
+          <figure class="screen">
+            <img src="assets/03-workout-logging.png" alt="SecureSets workout screen for logging reps and weight" width="1080" height="1920" loading="lazy">
+            <figcaption><strong>In-session logging</strong>See the sets you are recording as you go.</figcaption>
+          </figure>
+          <figure class="screen">
+            <img src="assets/04-pro-insights.png" alt="Illustrative SecureSets Pro lift trend chart" width="1080" height="1920" loading="lazy">
+            <figcaption><strong>Pro progress insights</strong>The chart is an illustration; your insights use your logged workouts.</figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <section class="section pro" id="pro" aria-labelledby="pro-title">
+      <div class="wrap split">
+        <div class="split-copy">
+          <p class="eyebrow">SecureSets Pro</p>
+          <h2 id="pro-title">See the work paying off.</h2>
+          <p>Pro makes your training history easier to read: see weekly frequency, sets by muscle group, estimated personal bests, and which lifts are moving or holding steady.</p>
+          <ul>
+            <li>Track weekly training frequency</li>
+            <li>Review trends across your lifts</li>
+            <li>Use SecureSets without ads while Pro is active</li>
+            <li>Choose the Rose theme</li>
+          </ul>
+          <p class="price-note">Free to install with ads. In the Netherlands, optional Pro is €0.99/month or €9.99 once; prices vary by country.</p>
+        </div>
+        <figure class="pro-shot">
+          <img src="assets/04-pro-insights.png" alt="Illustrative example of a SecureSets Pro strength trend" width="1080" height="1920" loading="lazy">
+          <figcaption>Illustrative example. Your chart uses your own logged workouts.</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="section wrap" id="privacy" aria-labelledby="privacy-title">
+      <div class="privacy">
+        <div class="privacy-grid">
+          <div>
+            <p class="eyebrow">Your training stays yours</p>
+            <h2 id="privacy-title">No sign-in for your workout log.</h2>
+            <p>Routines and workout history are stored on your device. SecureSets does not require an account. The optional AI model downloads to your device and runs locally after setup.</p>
+            <p>SecureSets uses Google AdMob to display ads. See Google Play's Data Safety section and the privacy policy for details about data used for ads and app services.</p>
+            <a class="fine-link" href="https://play.google.com/store/apps/details?id=com.securesets.app&amp;utm_source=securesets_site&amp;utm_medium=website&amp;utm_campaign=ss_first10_2026-10&amp;utm_content=privacy_section">Review SecureSets on Google Play</a>
+          </div>
+          <ul class="privacy-list">
+            <li><strong>Workout plans and logs</strong>Saved locally on your device.</li>
+            <li><strong>Optional AI planning</strong>The downloaded model runs on your device.</li>
+            <li><strong>Ads and app services</strong>Data practices are described in Google Play and the privacy policy.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="last-cta wrap" aria-labelledby="last-title">
+      <p class="eyebrow">Start with the next session</p>
+      <h2 id="last-title">Make your training easier to review.</h2>
+      <p>SecureSets is available for Android. Free to install, with optional Pro features.</p>
+      <a class="button" href="https://play.google.com/store/apps/details?id=com.securesets.app&amp;utm_source=securesets_site&amp;utm_medium=website&amp;utm_campaign=ss_first10_2026-10&amp;utm_content=closing_cta">Get it on Google Play</a>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap footer-row">
+      <span>© 2026 SecureSets · Lunava Software</span>
+      <nav class="footer-links" aria-label="Footer navigation">
+        <a href="https://thijszoontjes.github.io/securesets-privacy/">Privacy policy</a>
+        <a href="https://github.com/thijszoontjes/securesets-app">Website source</a>
+        <a href="mailto:lunavasoftware@gmail.com">Contact</a>
+      </nav>
     </div>
+  </footer>
 </body>
 </html>
